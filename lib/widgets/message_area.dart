@@ -1,5 +1,5 @@
 import 'package:ai_chat_client/cubit/chat/message_area/message_area_cubit.dart';
-import 'package:ai_chat_client/cubit/chat/message_area/message_area_state_.dart';
+import 'package:ai_chat_client/cubit/chat/message_area/message_area_state.dart';
 import 'package:ai_chat_client/cubit/chat/model_selection/model_selcetion_cubit.dart';
 import 'package:ai_chat_client/cubit/chat/model_selection/model_selection_state.dart';
 import 'package:ai_chat_client/services/dio.dart';
@@ -23,11 +23,8 @@ class MessageAreaContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => MessageAreaCubit()),
-        BlocProvider(create: (context) => ModelSelectionCubit([])),
-      ],
+    return BlocProvider(
+      create: (context) => ModelSelectionCubit([]),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 25),
         child: Row(
@@ -51,8 +48,6 @@ class MessageAreaContent extends StatelessWidget {
                       List<String> models = await DioService()
                           .getAvalibleModels();
 
-                      // Capture the cubit before awaiting to avoid using a BuildContext
-                      // after an async gap (prevents use_build_context_synchronously warnings).
                       final modelCubit = BlocProvider.of<ModelSelectionCubit>(
                         innerContext,
                         listen: false,
@@ -114,7 +109,7 @@ class MessageAreaContent extends StatelessWidget {
             ),
             SizedBox(
               height: MediaQuery.sizeOf(context).height * .075,
-              width: MediaQuery.sizeOf(context).width * .7,
+              width: MediaQuery.sizeOf(context).width * .5,
               child: TextField(
                 maxLines: null,
                 expands: true,
@@ -128,19 +123,22 @@ class MessageAreaContent extends StatelessWidget {
             ),
             BlocBuilder<MessageAreaCubit, MessageAreaState>(
               builder: (context, state) {
-                return (state is SendMessage && state.isUser)? CircularProgressIndicator(
-                  
-                ) : IconButton(
-                  onPressed: () async {
-                    String msg = _message.text;
-                    _message.clear();
-                    await context.read<MessageAreaCubit>().sendMessage(
-                      msg,
-                      true,
-                    );
-                  },
-                  icon: Icon(Icons.send),
-                );
+                return state.isLoading
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Icon(Icons.send),
+                      )
+                    : IconButton(
+                        onPressed: () async {
+                          String msg = _message.text;
+                          _message.clear();
+                          await context.read<MessageAreaCubit>().sendMessage(
+                            msg,
+                            true,
+                          );
+                        },
+                        icon: Icon(Icons.send, color: Colors.blue),
+                      );
               },
             ),
           ],
