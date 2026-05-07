@@ -1,6 +1,9 @@
+import 'package:ai_chat_client/cubit/chat/chat_history/chat_history_cubit.dart';
+import 'package:ai_chat_client/cubit/chat/chat_history/chat_history_states.dart';
 import 'package:ai_chat_client/cubit/chat/message_area/message_area_cubit.dart';
 import 'package:ai_chat_client/cubit/chat/message_area/message_area_state.dart';
 import 'package:ai_chat_client/widgets/chat_bubble.dart';
+import 'package:ai_chat_client/widgets/chat_history.dart';
 import 'package:ai_chat_client/widgets/message_area.dart';
 import 'package:ai_chat_client/widgets/three_dots_loading.dart';
 import 'package:flutter/material.dart';
@@ -36,12 +39,24 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Main Menu'), centerTitle: true),
-      drawer: Drawer(),
-      body: BlocProvider(
-        create: (_) => MessageAreaCubit(),
-        child: BlocListener<MessageAreaCubit, MessageAreaState>(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => MessageAreaCubit()),
+        BlocProvider(create: (context) => ChatHistoryCubit()),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: BlocBuilder<MessageAreaCubit, MessageAreaState>(
+            builder: (context, state) {
+              return Text(
+                state.chatTitle ?? 'Main Menu',
+              );
+            },
+          ),
+          centerTitle: true,
+        ),
+        drawer: Drawer(child: ChatHistory()),
+        body: BlocListener<MessageAreaCubit, MessageAreaState>(
           listenWhen: (previous, current) =>
               current.messages.length > previous.messages.length,
           listener: (context, state) {

@@ -14,7 +14,6 @@ set(APPLICATION_ID "com.example.ai_chat_client")
 cmake_policy(SET CMP0063 NEW)
 
 # Load bundled libraries from the lib/ directory relative to the binary.
-set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
 
 # Root filesystem for cross-building.
 if(FLUTTER_TARGET_PLATFORM_SYSROOT)
@@ -64,11 +63,10 @@ add_dependencies(${BINARY_NAME} flutter_assemble)
 # correctly, since the resources must in the right relative locations. To avoid
 # people trying to run the unbundled copy, put it in a subdirectory instead of
 # the default top-level location.
-set_target_properties(${BINARY_NAME}
-  PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/intermediates_do_not_run"
+set_target_properties(${BINARY_NAME} PROPERTIES
+  INSTALL_RPATH "\$ORIGIN/lib"
+  BUILD_WITH_INSTALL_RPATH TRUE
 )
-
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
@@ -90,6 +88,11 @@ install(CODE "
 
 set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+
+# Copy bundled .so libs from linux/lib/ into the bundle
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/"
+  DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)

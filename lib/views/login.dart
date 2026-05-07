@@ -1,5 +1,6 @@
 import 'package:ai_chat_client/cubit/auth/login/login_cubit.dart';
 import 'package:ai_chat_client/cubit/auth/login/login_states.dart';
+import 'package:ai_chat_client/views/create_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,7 +26,7 @@ class LoginView extends StatelessWidget {
                 TextField(controller: _usernameController),
 
                 SizedBox(height: 16),
-                
+
                 TextField(controller: _passwordController, obscureText: true),
 
                 SizedBox(height: 16),
@@ -37,12 +38,34 @@ class LoginView extends StatelessWidget {
                         context.read<LoginCubit>().attemptLogin(
                           _usernameController.text,
                           _passwordController.text,
-                          context
+                          context,
                         );
                       },
                       child: const Text('Login'),
                     );
                   },
+                ),
+
+                SizedBox(height: 16),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return CreateUserView();
+                            },
+                          ),
+                        );
+                      },
+                      child: const Text('Create A Local Account'),
+                    ),
+                  ],
                 ),
               ],
             ),

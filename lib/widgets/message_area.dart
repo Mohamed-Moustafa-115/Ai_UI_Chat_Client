@@ -135,6 +135,7 @@ class MessageAreaContent extends StatelessWidget {
                           await context.read<MessageAreaCubit>().sendMessage(
                             msg,
                             true,
+                            
                           );
                         },
                         icon: Icon(Icons.send, color: Colors.blue),
