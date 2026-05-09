@@ -36,7 +36,7 @@ class DioService {
             "Content-Type": "application/json",
           },
         ),
-        "http://192.168.1.3:11434/api/generate",
+        "http://localhost:11434/api/generate",
         data: {"model": selectedModel, "prompt": message, "stream": false},
       );
 
